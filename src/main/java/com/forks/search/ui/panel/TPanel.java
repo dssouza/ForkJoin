@@ -125,17 +125,38 @@ public class TPanel extends JPanel {
 
                     boolean complite = false;
 
+                    long timeStart = 0;
+
+                    long timeStop  = 0;
+
                     @Override
                     public void init() {
+
+                        folderName = eFolderName.getText();
+                        searchWord = eSearchName.getText();
+                        if (folderName.length() < 0 || folderName.isEmpty()) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Enter folder name.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if (searchWord.length() < 0 || searchWord.isEmpty()) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Enter word for search.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                         tareport.setText("Please wait...\n");
                         btnSearch.setEnabled(false);
                         btnStop.setEnabled(true);
-                        folderName = eFolderName.getText();
-                        searchWord = eSearchName.getText();
+                        timeStart = System.currentTimeMillis();
                     }
 
                     @Override
                     public void update() {
+                        timeStop = System.currentTimeMillis();
                         tareport.setText("");
                         if (!complite) {
                             tareport.append("Caution. Search was stopped." + "\nInformation may be incomplete.\n\n");
@@ -149,7 +170,8 @@ public class TPanel extends JPanel {
                         for (String filename : fileOfOccurrences) {
                             tareport.append("+++" + filename + "\n");
                         }
-                        tareport.append("\n\nFinish.");
+                        tareport.append("\n\nFinish.\n");
+                        tareport.append("time of execution: " + (timeStop-timeStart) + "ms;");
                     }
 
                     @Override
@@ -157,6 +179,7 @@ public class TPanel extends JPanel {
                         btnSearch.setEnabled(true);
                         btnStop.setEnabled(false);
                         forkJoinPool.shutdown();
+
                     }
 
                     @Override
@@ -260,7 +283,6 @@ public class TPanel extends JPanel {
         }
 
         public final void run() {
-            doInit();
             try {
                 done = false;
                 work();
